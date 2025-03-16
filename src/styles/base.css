@@ -1,0 +1,21 @@
+html, body {
+  height: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh; /* not all browsers support svh units */
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+
+  background-color: var(--color-blue-flapp);
+  color: var(--color-white);
+  font-family: var(--font-geist-sans);
+  font-size: 40px;
+  /* font-weight: 400; */
+}
