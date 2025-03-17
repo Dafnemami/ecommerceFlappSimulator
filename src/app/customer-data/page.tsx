@@ -9,8 +9,7 @@ export default function CustomerData() {
   const router = useRouter();
 
   const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     address: '',
     commune: '',
     phone: ''
@@ -22,7 +21,6 @@ export default function CustomerData() {
       ...userData,
       [name]: value // actualiza solo el campo que cambió
     });
-
     console.log(userData);
   };
 
@@ -30,14 +28,9 @@ export default function CustomerData() {
     return Object.values(userData).some(value => value === '');
   };
 
-  const isFirstNameValid = () => {
-    // no tiene espacios ni números
-    return !userData.firstName.match(/[\d\s]/);
-  }
-  
-  const isLastNameValid = () => {
-    // no tiene espacios ni números
-    return !userData.lastName.match(/[\d\s]/);
+  const isFullNameValid = () => {
+    // no tiene números y tiene al menos 2 palabras
+    return !userData.fullName.match(/[\d]/) && userData.fullName.split(' ').length >= 2;
   }
 
   const isAddressValid = () => {
@@ -62,10 +55,8 @@ export default function CustomerData() {
 
     if (isAnyFieldEmpty()) 
       errors.push('Completa todos los campos');
-    if (!isFirstNameValid()) 
+    if (!isFullNameValid()) 
       errors.push('Nombre inválido');
-    if (!isLastNameValid())
-      errors.push('Apellido inválido');
     if (!isAddressValid())
       errors.push('Dirección incompleta'); 
     if (!isCommuneValid())
@@ -125,10 +116,8 @@ export default function CustomerData() {
     <div className={styles.page}>
       <h1>CustomerData</h1>
       <form onSubmit={handleSubmit}>
-        <label>Nombre</label>
-        <input type="text" name="firstName" onChange={handleChange} />
-        <label>Apellido</label>
-        <input type="text" name="lastName" onChange={handleChange} />
+        <label>Nombre Completo</label>
+        <input type="text" name="fullName" onChange={handleChange} />
         <label>Dirección</label>
         <input type="text" name="address" onChange={handleChange}/>
         <label>Comuna</label>

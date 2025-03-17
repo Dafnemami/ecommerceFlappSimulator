@@ -3,16 +3,42 @@
 import styles from "@/styles/pages/checkout.module.css";
 import { useRouter } from "next/navigation";
 import CartSummary from "@/componets/cartSummary";
+import { combineCartAndUserData } from "@/app/checkout/utils";
+import { useEffect, useState } from "react";
 
 export default function Checkout() {
 
   const router = useRouter();
 
-  const storedCartData = localStorage.getItem("cart");
-  const products = storedCartData ? JSON.parse(storedCartData) : [];
-  console.log(products);
-  console.log('checkout');
+  const [cartAndUserData, setCartAndUserData] = useState({});
+  const [cartData, setCartData] = useState([]);
 
+  useEffect(() => {
+    // Necesita ejecutarte despúes que DOM esté listo
+    const storedCartData = localStorage.getItem("cart");
+    if (storedCartData) {
+      setCartData(JSON.parse(storedCartData));
+    }
+  }, []);
+
+  useEffect(() => {
+    const storedCartAndUserData = combineCartAndUserData();
+    if (storedCartAndUserData) {
+      setCartAndUserData(JSON.parse(storedCartAndUserData));
+    }
+  }, []);
+
+  const handleCalcuateShipping = () => {
+
+    if (cartAndUserData) {
+      console.log('Calculando costo de despacho');
+      console.log(cartAndUserData);
+    }
+    else {
+      // P. mejorar
+      alert('Debes ingresar tus datos primero');
+    }
+  }
 
   const handleClearCart = () => {
     localStorage.removeItem("cart");
@@ -24,13 +50,13 @@ export default function Checkout() {
     <div className={styles.page}>
       <h1>Checkout</h1>
 
-      <CartSummary products={products} />
+      <CartSummary products={cartData} />
 
       <button className={styles.button} onClick={() => router.push('/customer-data')}>
         Ingresa tus datos
       </button>
 
-      <button className={styles.button} > 
+      <button className={styles.button} onClick={handleCalcuateShipping}> 
         Cotizar despacho
       </button>
       
@@ -44,6 +70,3 @@ export default function Checkout() {
     </div>
   );
 }
-
-
-
