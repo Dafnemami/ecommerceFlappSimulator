@@ -28,14 +28,26 @@ export default function Checkout() {
     }
   }, []);
 
-  const handleCalcuateShipping = () => {
+  const alertShippingInfoIsMissing = () => {
+    alert('Debes ingresar tus datos primero');
+  }
+
+  const handleCalcuateShipping = async () => {
 
     if (cartAndUserData) {
       console.log('Calculando costo de despacho');
-      console.log(cartAndUserData);
+      try {
+        const response  = await fetch('/api/cart', { method : 'POST', body: JSON.stringify(cartAndUserData) });
+        const data = await response.json();
+        console.log(data);
+      } 
+      catch (error) {
+        console.log(error + '==> en handleCalcuateShipping');
+      }
     }
     else {
-      // P. mejorar
+      // P. mejorar 
+      alertShippingInfoIsMissing();
       alert('Debes ingresar tus datos primero');
     }
   }
