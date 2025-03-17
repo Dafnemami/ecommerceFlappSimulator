@@ -1,0 +1,70 @@
+.cartContainer {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  background: var(--color-gray);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.productList {
+  list-style: none;
+  padding: 0;
+}
+
+.productItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.productName {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.price,
+.quantity,
+.discount,
+.noDiscount,
+.total {
+  font-size: 0.9rem;
+}
+
+.discount {
+  color: green;
+}
+
+.noDiscount {
+  color: gray;
+}
+
+.summary {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.subtotal,
+.totalAmount {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.totalAmount {
+  color: #e44d26;
+}
+
+.emptyCart {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+  margin-top: 20px;
+}

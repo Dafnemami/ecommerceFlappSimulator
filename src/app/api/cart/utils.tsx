@@ -20,7 +20,7 @@ export const formatCart = async (cart: Cart) => {
       'productId': product.id,
       'price': product.price,
       'quantity': product.quantity,
-      'discount': Math.floor(product.discountPercentage * product.price)
+      'discount': Math.floor((product.discountPercentage / 100) * product.price)
       }
     }
   ); 
