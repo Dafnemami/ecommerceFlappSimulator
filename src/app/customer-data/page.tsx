@@ -9,10 +9,10 @@ export default function CustomerData() {
   const router = useRouter();
 
   const [userData, setUserData] = useState({
-    name: '',
-    shipping_street: '',
-    commune: '',
-    phone: ''
+    name: "",
+    shipping_street: "",
+    commune: "",
+    phone: ""
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

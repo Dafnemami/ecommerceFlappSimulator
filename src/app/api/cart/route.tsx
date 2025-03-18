@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { formatCart } from './utils';
+import agent from './httpsAgent';
+import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo
 
 // Endpoint: /api/cart
 
@@ -36,6 +38,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No hay stock suficiente para satisfacer la orden' }, { status: 400 });
     }
 
+    // tarificación a los couriers
+    await couriersTarification(enhancedCartProducts, productsAndShippingInfo.customer_data);
+
 
     return NextResponse.json({ message: 'Orden recibida X' });
   } catch (error) {
@@ -49,7 +54,7 @@ const fetchAllProducts = async () => {
   
   const allProducts = [];
   let skip = 0; // usando paginación de 10 en 10
-  const atributesToSelect = 'id,title,rating,stock';
+  const atributesToSelect = 'id,title,rating,stock,dimensions';
 
   let response = await fetch(`https://dummyjson.com/products?limit=10&skip=${skip}&select=${atributesToSelect}`);
   let data = await response.json();
@@ -70,6 +75,7 @@ const fetchAllProducts = async () => {
   return allProducts.flat();
 }
 
+
 type cartProduct = {
   productId: number;
   price: number;
@@ -82,6 +88,11 @@ type dataBaseProduct = {
   title: string;
   rating: number;
   stock: number;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  }
 }
 
 const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: dataBaseProduct[] ) => {
@@ -97,6 +108,7 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
       title: product!.title,  // Incluimos otros detalles del producto si es necesario
       rating: product!.rating,
       stock: product!.stock,
+      dimensions: product!.dimensions,
       realStock: realStock
     };
   });
@@ -113,6 +125,11 @@ type enhanceCartProduct = {
   title: string;
   rating: number;
   stock: number;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  }
   realStock: number;
 }
 
@@ -136,7 +153,100 @@ const canStockBeSatisfied = (enhancedCartProducts: enhanceCartProduct[]) => {
 }
 
 
+const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], dropOffInfo: CustomerData) => {
 
+  const pickUpInfo = {
+    name: "Tienda Flapp",
+    phone: "+56912345678",
+    address: "Juan de Valiente 3630",
+    commune: "Vitacura"
+  }
+
+  await requestUderTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
+
+  // P. X-Api-key deberían ir en un .env  !!
+  // TráeloYa: MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf
+
+}
+
+type PickUpInfo = {
+  name: string;
+  phone: string;
+  address: string;
+  commune: string;
+};
+
+type CustomerData = {
+  name: string;
+  shipping_street: string;
+  commune: string;
+  phone: string;
+}
+
+const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
+  try {
+    const inputBody = prepareUderTarificationInput(enhancedCartProducts, pickUpInfo, dropOffInfo);
+    console.log(JSON.stringify(inputBody));
+    const response = await fetch('https://recruitment.weflapp.com/tarifier/uder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-key': 'NDM6HWuxtyQ9saYqnZgbJBVrS8A7KpeXRjGv2m5c'
+      },
+      body: JSON.stringify(inputBody),
+      agent
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+  } catch (error) {
+    console.log(error + '==> en UderTarification');
+    console.error('Mensaje:', error.message);
+  }
+}
+
+const prepareUderTarificationInput = (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
+  
+  const manifestItems: any[] = [];
+
+  enhancedCartProducts.forEach(product => {
+    manifestItems.push({
+      "name": product.title,
+      "quantity": product.quantity,
+      "price": product.price,
+      "dimensions": {
+        "length": product.dimensions.width,
+        "height": product.dimensions.height,
+        "depth": product.dimensions.depth
+      }
+    });
+  });
+
+  const UderTarificationInput = {
+    "pickup_address": pickUpInfo.address,
+    "pickup_name": pickUpInfo.name,
+    "pickup_phone_number": pickUpInfo.phone,
+
+    "dropoff_address": dropOffInfo.shipping_street,
+    "dropoff_name": dropOffInfo.name,
+    "dropoff_phone_number": dropOffInfo.phone,
+
+    "manifest_items": manifestItems
+   }
+
+  //  console.log(UderTarificationInput);
+
+  return UderTarificationInput;
+}
+
+
+
+// const printTarificationInConsole = () => {
 
 
 
