@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { formatCart } from './utils';
+import { formatCart, printEnhanceCartInConsole, printTarificationsInConsole } from './utils';
 import agent from './httpsAgent';
-import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo
+import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo para uso de agent
+import { cartProduct, dataBaseProduct, enhanceCartProduct, PickUpInfo, CustomerData } from './types';
 
 // Endpoint: /api/cart
 
 // Get cart (generar carrito)
 export async function GET() {
-
   const cartID = Math.floor(Math.random() * 40);
-
   try {
     const response = await fetch(`https://dummyjson.com/carts/${cartID}`)
     const cart = await response.json();
@@ -24,22 +23,20 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const productsAndShippingInfo = await request.json();
-    // console.log(productsAndShippingInfo);
+    const cartProductsAndCustomerData = await request.json();
+    const cartProducts = cartProductsAndCustomerData.products;
+    const customerData = cartProductsAndCustomerData.customer_data;
   
     // Esto debería estar contenido en otra función
-    const cartProducts = productsAndShippingInfo.products;
     const allProducts = await fetchAllProducts();
     const enhancedCartProducts = mergeCartWithProductDetails(cartProducts, allProducts);
     printEnhanceCartInConsole(enhancedCartProducts);
 
     if (!canStockBeSatisfied(enhancedCartProducts)) {
-      // P. indicar que productos no tienen stock suficiente
       return NextResponse.json({ message: 'No hay stock suficiente para satisfacer la orden' }, { status: 400 });
     }
 
-    // tarificación a los couriers
-    const bestCourier = await searchForBestCourierTarification(enhancedCartProducts, productsAndShippingInfo.customer_data);
+    const bestCourier = await searchForBestCourierTarification(enhancedCartProducts, customerData);
     
     if (bestCourier.courier === "NotFound") {
       return NextResponse.json({ message: 'No hay couriers disponibles que puedan entregar la orden' }, { status: 400 });
@@ -52,9 +49,7 @@ export async function POST(request: NextRequest) {
 }
 
 
-// SACAR ESTE CÓDIGO DE ACÁ ??
 const fetchAllProducts = async () => {
-  
   const allProducts = [];
   let skip = 0; // usando paginación de 10 en 10
   const atributesToSelect = 'id,title,rating,stock,dimensions';
@@ -79,27 +74,7 @@ const fetchAllProducts = async () => {
 }
 
 
-type cartProduct = {
-  productId: number;
-  price: number;
-  quantity: number;
-  discount: number;
-}
-
-type dataBaseProduct = {
-  id: number;
-  title: string;
-  rating: number;
-  stock: number;
-  dimensions: {
-    width: number;
-    height: number;
-    depth: number;
-  }
-}
-
 const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: dataBaseProduct[] ) => {
-
   const enhancedCartProducts = cartProducts.map( cartProduct => {
     const product = allProducts.find( product => product.id === cartProduct.productId );
     const realStock = Math.floor(product!.stock / product!.rating);
@@ -119,45 +94,11 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
   return enhancedCartProducts;
 }
 
-
-type enhanceCartProduct = {
-  id: number;
-  price: number;
-  quantity: number;
-  discount: number;
-  title: string;
-  rating: number;
-  stock: number;
-  dimensions: {
-    width: number;
-    height: number;
-    depth: number;
-  }
-  realStock: number;
-}
-
-
-const printEnhanceCartInConsole = (enhancedCartProducts: enhanceCartProduct[]) => {
-  console.log("Carro Recibido es el siguente:");
-  console.table(enhancedCartProducts.map(product => ({
-    "ID": product.id,
-    "Nombre": product.title,
-    "Precio por unidad ($)": product.price,
-    "Descuento total ($)": product.discount * product.quantity,
-    "Cantidad solicitada": product.quantity,
-    "Stock obtenido": product.stock,
-    "Rating": product.rating,
-    "Stock real": product.realStock
-  })));
-}
-
 const canStockBeSatisfied = (enhancedCartProducts: enhanceCartProduct[]) => {
   return enhancedCartProducts.every(product => product.realStock >= product.quantity);
 }
 
-
 const searchForBestCourierTarification = async (enhancedCartProducts: enhanceCartProduct[], customerData: CustomerData) => {
-
   const bestCourier = {"courier": "NotFound", "price": -1}; 
 
   const { uderTarification, traeloYaTarification } = await couriersTarification(enhancedCartProducts, customerData);
@@ -178,8 +119,8 @@ const searchForBestCourierTarification = async (enhancedCartProducts: enhanceCar
   return bestCourier;
 }
 
-const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], dropOffInfo: CustomerData) => {
 
+const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], dropOffInfo: CustomerData) => {
   const pickUpInfo = {
     name: "Tienda Flapp",
     phone: "+56912345678",
@@ -192,22 +133,8 @@ const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], 
   printTarificationsInConsole(uderTarification, traeloYaTarification);
 
   return { uderTarification, traeloYaTarification };
-
 }
 
-type PickUpInfo = {
-  name: string;
-  phone: string;
-  address: string;
-  commune: string;
-};
-
-type CustomerData = {
-  name: string;
-  shipping_street: string;
-  commune: string;
-  phone: string;
-}
 
 const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
   try {
@@ -276,7 +203,6 @@ const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProd
     });
 
     const traeloYaTarification = await response.json();
-
     return traeloYaTarification;
 
   } catch (error) {
@@ -319,27 +245,3 @@ const prepareTraeloYaTarificationInput = (enhancedCartProducts: enhanceCartProdu
 
   return TraeloYaTarificationInput;
 }
-
-
-const printTarificationsInConsole = (uderTarification: any, traeloYaTarification: any) => {
-  console.log("Tarificaciones:");
-  console.log("Uder:");
-  console.log(uderTarification);
-  console.log("TraeloYa:");
-  console.log(traeloYaTarification);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

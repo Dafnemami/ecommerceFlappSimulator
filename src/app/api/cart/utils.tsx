@@ -1,18 +1,6 @@
-
-interface Cart {
-  products: Array<{
-    id: number,
-    price: number,
-    quantity: number,
-    discountPercentage: number,
-  }>;
-  userId: number;
-}
+import { Cart, enhanceCartProduct } from './types';
 
 export const formatCart = async (cart: Cart) => {
-
-  // Solo si no se ha generdo otro carrito antes ??
-
   const cartProducts = cart.products;
 
   const formattedCart = cartProducts.map((product) => {
@@ -26,4 +14,26 @@ export const formatCart = async (cart: Cart) => {
   ); 
 
   return formattedCart;
+}
+
+export const printEnhanceCartInConsole = (enhancedCartProducts: enhanceCartProduct[]) => {
+  console.log("Carro Recibido es el siguente:");
+  console.table(enhancedCartProducts.map(product => ({
+    "ID": product.id,
+    "Nombre": product.title,
+    "Precio por unidad ($)": product.price,
+    "Descuento total ($)": product.discount * product.quantity,
+    "Cantidad solicitada": product.quantity,
+    "Stock obtenido": product.stock,
+    "Rating": product.rating,
+    "Stock real": product.realStock
+  })));
+}
+
+export const printTarificationsInConsole = (uderTarification: any, traeloYaTarification: any) => {
+  console.log("Tarificaciones:");
+  console.log("Uder:");
+  console.log(uderTarification);
+  console.log("TraeloYa:");
+  console.log(traeloYaTarification);
 }
