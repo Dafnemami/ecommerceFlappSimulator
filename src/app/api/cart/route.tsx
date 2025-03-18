@@ -89,7 +89,8 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
       discount: cartProduct.discount,
       title: product!.title,  // Incluimos otros detalles del producto si es necesario
       rating: product!.rating,
-      stock: product!.stock
+      stock: product!.stock,
+      realStock: Math.floor(product!.stock / product!.rating)
     };
   });
 
