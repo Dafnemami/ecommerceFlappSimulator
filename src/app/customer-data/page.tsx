@@ -9,8 +9,8 @@ export default function CustomerData() {
   const router = useRouter();
 
   const [userData, setUserData] = useState({
-    fullName: '',
-    address: '',
+    name: '',
+    shipping_street: '',
     commune: '',
     phone: ''
   });
@@ -28,14 +28,14 @@ export default function CustomerData() {
     return Object.values(userData).some(value => value === '');
   };
 
-  const isFullNameValid = () => {
+  const isnameValid = () => {
     // no tiene números y tiene al menos 2 palabras
-    return !userData.fullName.match(/[\d]/) && userData.fullName.split(' ').length >= 2;
+    return !userData.name.match(/[\d]/) && userData.name.split(' ').length >= 2;
   }
 
   const isAddressValid = () => {
     // tiene números y letras
-    return userData.address.match(/\d/) && userData.address.match(/\w/);
+    return userData.shipping_street.match(/\d/) && userData.shipping_street.match(/\w/);
   }
   
   const isCommuneValid = () => {
@@ -55,7 +55,7 @@ export default function CustomerData() {
 
     if (isAnyFieldEmpty()) 
       errors.push('Completa todos los campos');
-    if (!isFullNameValid()) 
+    if (!isnameValid()) 
       errors.push('Nombre inválido');
     if (!isAddressValid())
       errors.push('Dirección incompleta'); 
@@ -117,9 +117,9 @@ export default function CustomerData() {
       <h1>CustomerData</h1>
       <form onSubmit={handleSubmit}>
         <label>Nombre Completo</label>
-        <input type="text" name="fullName" onChange={handleChange} />
+        <input type="text" name="name" onChange={handleChange} />
         <label>Dirección</label>
-        <input type="text" name="address" onChange={handleChange}/>
+        <input type="text" name="shipping_street" onChange={handleChange}/>
         <label>Comuna</label>
         <input type="text" name="commune" onChange={handleChange}/>
         <label>Teléfono</label>

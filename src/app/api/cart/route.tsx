@@ -22,57 +22,85 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
-    console.log(data);
+    const productsAndShippingInfo = await request.json();
+    // console.log(productsAndShippingInfo);
+  
+    // Esto debería estar contenido en otra función
+    const cartProducts = productsAndShippingInfo.products;
+    const allProducts = await fetchAllProducts();
+    const enhancedCartProducts = mergeCartWithProductDetails(cartProducts, allProducts);
 
-    fetchAllProducts(data.products);
 
-    return NextResponse.json({ message: 'Orden recibida' });
+    return NextResponse.json({ message: 'Orden recibida X' });
   } catch (error) {
     return NextResponse.json({ message: `Error al recibir la orden ${error}` }, { status: 500 });
   }
 }
 
-type Product = {
+
+// SACAR ESTE CÓDIGO DE ACÁ ??
+const fetchAllProducts = async () => {
+  
+  const allProducts = [];
+  let skip = 0; // usando paginación de 10 en 10
+  const atributesToSelect = 'id,title,rating,stock';
+
+  let response = await fetch(`https://dummyjson.com/products?limit=10&skip=${skip}&select=${atributesToSelect}`);
+  let data = await response.json();
+
+  while (true) {
+    try {
+      response = await fetch(`https://dummyjson.com/products?limit=10&skip=${skip}&select=${atributesToSelect}`);
+      data = await response.json();
+      if (data.products.length == 0)
+        break
+      allProducts.push(data.products);
+      skip += 10;
+    } catch (error) {
+      console.log(error + '==> en fetchAllProducts');
+    }
+  }
+
+  return allProducts.flat();
+}
+
+type cartProduct = {
   productId: number;
   price: number;
   quantity: number;
   discount: number;
 }
 
+type dataBaseProduct = {
+  id: number;
+  title: string;
+  rating: number;
+  stock: number;
+}
 
-const fetchAllProducts = async () => {
-  // trae todos los productos usando paginación de 10 en 10
-  const allProducts = [];
-  let page = 1;
-  let totalPages = 1;
+const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: dataBaseProduct[] ) => {
 
-  while (page <= totalPages) { // P. revisar!!
-    try {
-      const response = await fetch(`https://dummyjson.com/products?page=${page}`);
-      const data = await response.json();
-      allProducts.push(data.products);
-      totalPages = data.totalPages;
-      page++;
-    } catch (error) {
-      console.log(error + '==> en fetchAllProducts');
-    }
-  }
+  const enhancedCartProducts = cartProducts.map( cartProduct => {
+    const product = allProducts.find( product => product.id === cartProduct.productId );
+    return {
+      id: product!.id, // Usamos id del producto de la base de datos
+      price: cartProduct.price,
+      quantity: cartProduct.quantity,
+      discount: cartProduct.discount,
+      title: product!.title,  // Incluimos otros detalles del producto si es necesario
+      rating: product!.rating,
+      stock: product!.stock
+    };
+  });
 
-  return allProducts;
+  console.log(enhancedCartProducts);
+  console.log('LEONA');
 
+  return enhancedCartProducts;
 }
 
 
-const filterCartProducts = ( product: Product[] ) => {
 
-  const cartProducts = [];
-  const allProducts = fetchAllProducts();
-  
-  product.forEach((prod) => {
-    const product = allProducts.find((p) => p.id === prod.productId);
-    cartProducts.push(product);
-  });
 
 
 

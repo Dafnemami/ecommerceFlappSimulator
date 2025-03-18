@@ -37,7 +37,11 @@ export default function Checkout() {
     if (cartAndUserData) {
       console.log('Calculando costo de despacho');
       try {
-        const response  = await fetch('/api/cart', { method : 'POST', body: JSON.stringify(cartAndUserData) });
+        const response  = await fetch('http://localhost:3000/api/cart', { 
+          method : 'POST', 
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cartAndUserData) 
+        });
         const data = await response.json();
         console.log(data);
       } 
