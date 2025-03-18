@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
 const fetchAllProducts = async () => {
   const allProducts = [];
-  let skip = 0; // usando paginación de 10 en 10
+  let skip = 0;
   const atributesToSelect = 'id,title,rating,stock,dimensions';
 
   let response = await fetch(`https://dummyjson.com/products?limit=10&skip=${skip}&select=${atributesToSelect}`);
@@ -79,11 +79,11 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
     const product = allProducts.find( product => product.id === cartProduct.productId );
     const realStock = Math.floor(product!.stock / product!.rating);
     return {
-      id: product!.id, // Usamos id del producto de la base de datos
+      id: product!.id,
       price: cartProduct.price,
       quantity: cartProduct.quantity,
       discount: cartProduct.discount,
-      title: product!.title,  // Incluimos otros detalles del producto si es necesario
+      title: product!.title,
       rating: product!.rating,
       stock: product!.stock,
       dimensions: product!.dimensions,
@@ -143,7 +143,7 @@ const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-key': 'NDM6HWuxtyQ9saYqnZgbJBVrS8A7KpeXRjGv2m5c'
+        'X-Api-key': process.env.UDER_CREDENTIAL
       },
       body: JSON.stringify(inputBody),
       agent
@@ -196,7 +196,7 @@ const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProd
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Api-key': 'MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf'
+        'X-Api-key': process.env.TRAELOYA_CREDENTIAL
       },
       body: JSON.stringify(inputBody),
       agent

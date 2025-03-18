@@ -6,6 +6,11 @@ import CartSummary from "@/componets/cartSummary";
 import { combineCartAndUserData } from "@/app/checkout/utils";
 import { useEffect, useState } from "react";
 
+type ShippingResponse = {
+  courier: string;
+  price: number;
+}
+
 export default function Checkout() {
 
   const router = useRouter();
@@ -35,7 +40,6 @@ export default function Checkout() {
   const handleCalcuateShipping = async () => {
 
     if (cartAndUserData) {
-      console.log('Calculando costo de despacho');
       try {
         const response  = await fetch('http://localhost:3000/api/cart', { 
           method : 'POST', 
@@ -44,17 +48,21 @@ export default function Checkout() {
         });
         const data = await response.json();
         console.log(data);
-        // P. manejo cuando no hay stock suficiente
+
+        handleShippingResponse(data);
       } 
       catch (error) {
         console.log(error + '==> en handleCalcuateShipping');
       }
     }
     else {
-      // P. mejorar 
       alertShippingInfoIsMissing();
-      alert('Debes ingresar tus datos primero');
     }
+  }
+
+  const handleShippingResponse = (shippingResponse: ShippingResponse) => {
+    localStorage.setItem('shipping', JSON.stringify(shippingResponse));
+    router.push('/shipping-results');
   }
 
   const handleClearCart = () => {
