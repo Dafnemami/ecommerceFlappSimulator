@@ -95,7 +95,7 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
     };
   });
 
-  console.log("%cCarro Recibido", "font-size: 20px; font-weight: bold; color: #4CAF50;");
+  console.log("Carro Recibido es el siguente:");
   console.table(enhancedCartProducts.map(product => ({
     "ID": product.id,
     "Nombre": product.title,
