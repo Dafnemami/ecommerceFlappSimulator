@@ -29,6 +29,12 @@ export async function POST(request: NextRequest) {
     const cartProducts = productsAndShippingInfo.products;
     const allProducts = await fetchAllProducts();
     const enhancedCartProducts = mergeCartWithProductDetails(cartProducts, allProducts);
+    printEnhanceCartInConsole(enhancedCartProducts);
+
+    if (!canStockBeSatisfied(enhancedCartProducts)) {
+      // P. indicar que productos no tienen stock suficiente
+      return NextResponse.json({ message: 'No hay stock suficiente para satisfacer la orden' }, { status: 400 });
+    }
 
 
     return NextResponse.json({ message: 'Orden recibida X' });
@@ -95,6 +101,23 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
     };
   });
 
+  return enhancedCartProducts;
+}
+
+
+type enhanceCartProduct = {
+  id: number;
+  price: number;
+  quantity: number;
+  discount: number;
+  title: string;
+  rating: number;
+  stock: number;
+  realStock: number;
+}
+
+
+const printEnhanceCartInConsole = (enhancedCartProducts: enhanceCartProduct[]) => {
   console.log("Carro Recibido es el siguente:");
   console.table(enhancedCartProducts.map(product => ({
     "ID": product.id,
@@ -106,9 +129,10 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
     "Rating": product.rating,
     "Stock real": product.realStock
   })));
-  
+}
 
-  return enhancedCartProducts;
+const canStockBeSatisfied = (enhancedCartProducts: enhanceCartProduct[]) => {
+  return enhancedCartProducts.every(product => product.realStock >= product.quantity);
 }
 
 

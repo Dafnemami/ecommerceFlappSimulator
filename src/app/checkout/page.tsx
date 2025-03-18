@@ -44,6 +44,7 @@ export default function Checkout() {
         });
         const data = await response.json();
         console.log(data);
+        // P. manejo cuando no hay stock suficiente
       } 
       catch (error) {
         console.log(error + '==> en handleCalcuateShipping');
