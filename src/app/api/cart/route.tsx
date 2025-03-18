@@ -165,12 +165,8 @@ const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], 
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const uderTarification = await requestUderTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
-  console.log(uderTarification);
-
   const traeloYaTarification = await requestTraeloYaTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
-  console.log(traeloYaTarification);
-
-
+  printTarificationsInConsole(uderTarification, traeloYaTarification);
 
 }
 
@@ -198,7 +194,6 @@ const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[
         'X-Api-key': 'NDM6HWuxtyQ9saYqnZgbJBVrS8A7KpeXRjGv2m5c'
       },
       body: JSON.stringify(inputBody),
-      agent
     });
 
     const uderTarification = await response.json();
@@ -251,7 +246,6 @@ const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProd
         'X-Api-key': 'MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf'
       },
       body: JSON.stringify(inputBody),
-      agent
     });
 
     const traeloYaTarification = await response.json();
@@ -300,7 +294,13 @@ const prepareTraeloYaTarificationInput = (enhancedCartProducts: enhanceCartProdu
 }
 
 
-// const printTarificationsInConsole = () => {
+const printTarificationsInConsole = (uderTarification: any, traeloYaTarification: any) => {
+  console.log("Tarificaciones:");
+  console.log("Uder:");
+  console.log(uderTarification);
+  console.log("TraeloYa:");
+  console.log(traeloYaTarification);
+}
 
 
 
