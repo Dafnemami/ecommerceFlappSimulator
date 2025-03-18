@@ -82,6 +82,7 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
 
   const enhancedCartProducts = cartProducts.map( cartProduct => {
     const product = allProducts.find( product => product.id === cartProduct.productId );
+    const realStock = Math.floor(product!.stock / product!.rating);
     return {
       id: product!.id, // Usamos id del producto de la base de datos
       price: cartProduct.price,
@@ -90,12 +91,22 @@ const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: 
       title: product!.title,  // Incluimos otros detalles del producto si es necesario
       rating: product!.rating,
       stock: product!.stock,
-      realStock: Math.floor(product!.stock / product!.rating)
+      realStock: realStock
     };
   });
 
-  console.log(enhancedCartProducts);
-  console.log('LEONA');
+  console.log("%cCarro Recibido", "font-size: 20px; font-weight: bold; color: #4CAF50;");
+  console.table(enhancedCartProducts.map(product => ({
+    "ID": product.id,
+    "Nombre": product.title,
+    "Precio por unidad ($)": product.price,
+    "Descuento total ($)": product.discount * product.quantity,
+    "Cantidad solicitada": product.quantity,
+    "Stock obtenido": product.stock,
+    "Rating": product.rating,
+    "Stock real": product.realStock
+  })));
+  
 
   return enhancedCartProducts;
 }
