@@ -1,5 +1,3 @@
-
-// Join json userData & cart
 export const combineCartAndUserData = () => {
   const cart = localStorage.getItem('cart');
   const userData = localStorage.getItem('userData');

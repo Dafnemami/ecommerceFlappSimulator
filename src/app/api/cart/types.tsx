@@ -14,6 +14,22 @@ export type Cart = {
 
 // for routes.tsx
 
+export type ManifestItems = {
+  name: string,
+  quantity: number,
+  price: number,
+  dimensions: {
+    length: number,
+    height: number,
+    depth: number
+  }
+}[];
+
+export type Items = {
+  quantity: number,
+  value: number,
+  volume: number
+}[];
 
 export type cartProduct = {
   productId: number;

@@ -3,7 +3,7 @@
 import styles from "@/styles/pages/checkout.module.css";
 import { useRouter } from "next/navigation";
 import CartSummary from "@/componets/cartSummary";
-import { combineCartAndUserData } from "@/app/checkout/utils";
+import { combineCartAndUserData } from "@/app/(views)/checkout/utils";
 import { useEffect, useState } from "react";
 
 type ShippingResponse = {
@@ -19,7 +19,6 @@ export default function Checkout() {
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
-    // Necesita ejecutarte despúes que DOM esté listo
     const storedCartData = localStorage.getItem("cart");
     if (storedCartData) {
       setCartData(JSON.parse(storedCartData));
@@ -37,7 +36,7 @@ export default function Checkout() {
     alert('Debes ingresar tus datos primero');
   }
 
-  const handleCalcuateShipping = async () => {
+  const handleCalculateShipping = async () => {
 
     if (cartAndUserData) {
       try {
@@ -52,7 +51,7 @@ export default function Checkout() {
         handleShippingResponse(data);
       } 
       catch (error) {
-        console.log(error + '==> en handleCalcuateShipping');
+        console.log(error + '==> en handleCalculateShipping');
       }
     }
     else {
@@ -68,7 +67,7 @@ export default function Checkout() {
   const handleClearCart = () => {
     localStorage.removeItem("cart");
     router.push('/');
-    // alert('Carrito limpiado');
+    alert('Carrito limpiado. Volverás a la página principal');
   };
 
   return (
@@ -81,7 +80,7 @@ export default function Checkout() {
         Ingresa tus datos
       </button>
 
-      <button className={styles.button} onClick={handleCalcuateShipping}> 
+      <button className={styles.button} onClick={handleCalculateShipping}> 
         Cotizar despacho
       </button>
       

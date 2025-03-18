@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { formatCart, printEnhanceCartInConsole, printTarificationsInConsole } from './utils';
 import agent from './httpsAgent';
 import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo para uso de agent
-import { cartProduct, dataBaseProduct, enhanceCartProduct, PickUpInfo, CustomerData } from './types';
+import { cartProduct, dataBaseProduct, enhanceCartProduct, PickUpInfo, CustomerData, ManifestItems, Items } from './types';
 
 // Endpoint: /api/cart
 
-// Get cart (generar carrito)
 export async function GET() {
   const cartID = Math.floor(Math.random() * 40);
   try {
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
     const cartProducts = cartProductsAndCustomerData.products;
     const customerData = cartProductsAndCustomerData.customer_data;
   
-    // Esto debería estar contenido en otra función
     const allProducts = await fetchAllProducts();
     const enhancedCartProducts = mergeCartWithProductDetails(cartProducts, allProducts);
     printEnhanceCartInConsole(enhancedCartProducts);
@@ -72,7 +70,6 @@ const fetchAllProducts = async () => {
 
   return allProducts.flat();
 }
-
 
 const mergeCartWithProductDetails = ( cartProducts: cartProduct[], allProducts: dataBaseProduct[] ) => {
   const enhancedCartProducts = cartProducts.map( cartProduct => {
@@ -159,7 +156,7 @@ const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[
 
 const prepareUderTarificationInput = (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
   
-  const manifestItems: any[] = [];
+  const manifestItems: ManifestItems = [];
 
   enhancedCartProducts.forEach(product => {
     manifestItems.push({
@@ -189,6 +186,7 @@ const prepareUderTarificationInput = (enhancedCartProducts: enhanceCartProduct[]
   return UderTarificationInput;
 }
 
+
 const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
   try {
     const inputBody = prepareTraeloYaTarificationInput(enhancedCartProducts, pickUpInfo, dropOffInfo);
@@ -212,7 +210,7 @@ const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProd
 
 const prepareTraeloYaTarificationInput = (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
   
-  const items: any[] = [];
+  const items: Items = [];
 
   enhancedCartProducts.forEach(product => {
     items.push({
