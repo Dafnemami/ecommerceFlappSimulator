@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { formatCart } from './utils';
 import agent from './httpsAgent';
 import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo
+import { isPagesAPIRouteMatch } from 'next/dist/server/route-matches/pages-api-route-match';
 
 // Endpoint: /api/cart
 
@@ -162,10 +163,14 @@ const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], 
     commune: "Vitacura"
   }
 
-  await requestUderTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const uderTarification = await requestUderTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
+  console.log(uderTarification);
 
-  // P. X-Api-key deberían ir en un .env  !!
-  // TráeloYa: MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf
+  const traeloYaTarification = await requestTraeloYaTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
+  console.log(traeloYaTarification);
+
+
 
 }
 
@@ -186,7 +191,6 @@ type CustomerData = {
 const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
   try {
     const inputBody = prepareUderTarificationInput(enhancedCartProducts, pickUpInfo, dropOffInfo);
-    console.log(JSON.stringify(inputBody));
     const response = await fetch('https://recruitment.weflapp.com/tarifier/uder', {
       method: 'POST',
       headers: {
@@ -197,16 +201,11 @@ const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[
       agent
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log(data);
+    const uderTarification = await response.json();
+    return uderTarification;
 
   } catch (error) {
     console.log(error + '==> en UderTarification');
-    console.error('Mensaje:', error.message);
   }
 }
 
@@ -239,14 +238,69 @@ const prepareUderTarificationInput = (enhancedCartProducts: enhanceCartProduct[]
     "manifest_items": manifestItems
    }
 
-  //  console.log(UderTarificationInput);
-
   return UderTarificationInput;
 }
 
+const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
+  try {
+    const inputBody = prepareTraeloYaTarificationInput(enhancedCartProducts, pickUpInfo, dropOffInfo);
+    const response = await fetch('https://recruitment.weflapp.com/tarifier/traelo_ya', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-key': 'MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf'
+      },
+      body: JSON.stringify(inputBody),
+      agent
+    });
+
+    const traeloYaTarification = await response.json();
+
+    return traeloYaTarification;
+
+  } catch (error) {
+    console.log(error + '==> en TraeloYaTarification');
+  }
+}
+
+const prepareTraeloYaTarificationInput = (enhancedCartProducts: enhanceCartProduct[], pickUpInfo: PickUpInfo, dropOffInfo: CustomerData) => {
+  
+  const items: any[] = [];
+
+  enhancedCartProducts.forEach(product => {
+    items.push({
+      "quantity": product.quantity,
+      "value": product.price,
+      "volume": Math.floor(product.dimensions.width * product.dimensions.height * product.dimensions.depth),
+    });
+  });
+
+  const TraeloYaTarificationInput = {
+    "items": items,
+
+    "waypoints": [
+      {
+        "type": "PICK_UP",
+        "addressStreet": pickUpInfo.address,
+        "city": pickUpInfo.commune,
+        "phone": pickUpInfo.phone,
+        "name": pickUpInfo.name
+      },
+      {
+        "type": "DROP_OFF",
+        "addressStreet": dropOffInfo.shipping_street,
+        "city": dropOffInfo.commune,
+        "phone": dropOffInfo.phone,
+        "name": dropOffInfo.name
+      }
+    ]
+  }
+
+  return TraeloYaTarificationInput;
+}
 
 
-// const printTarificationInConsole = () => {
+// const printTarificationsInConsole = () => {
 
 
 
