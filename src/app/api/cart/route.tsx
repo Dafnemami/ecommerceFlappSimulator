@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { formatCart } from './utils';
 import agent from './httpsAgent';
 import fetch from 'node-fetch'; // Importar node-fetch en lugar del fetch nativo
-import { isPagesAPIRouteMatch } from 'next/dist/server/route-matches/pages-api-route-match';
 
 // Endpoint: /api/cart
 
@@ -40,10 +39,13 @@ export async function POST(request: NextRequest) {
     }
 
     // tarificación a los couriers
-    await couriersTarification(enhancedCartProducts, productsAndShippingInfo.customer_data);
+    const bestCourier = await searchForBestCourierTarification(enhancedCartProducts, productsAndShippingInfo.customer_data);
+    
+    if (bestCourier.courier === "NotFound") {
+      return NextResponse.json({ message: 'No hay couriers disponibles que puedan entregar la orden' }, { status: 400 });
+    }
 
-
-    return NextResponse.json({ message: 'Orden recibida X' });
+    return NextResponse.json({bestCourier});
   } catch (error) {
     return NextResponse.json({ message: `Error al recibir la orden ${error}` }, { status: 500 });
   }
@@ -154,6 +156,28 @@ const canStockBeSatisfied = (enhancedCartProducts: enhanceCartProduct[]) => {
 }
 
 
+const searchForBestCourierTarification = async (enhancedCartProducts: enhanceCartProduct[], customerData: CustomerData) => {
+
+  const bestCourier = {"courier": "NotFound", "price": -1}; 
+
+  const { uderTarification, traeloYaTarification } = await couriersTarification(enhancedCartProducts, customerData);
+
+  if (uderTarification.error && !traeloYaTarification.error) {
+    bestCourier.courier = "TraeloYa";
+    bestCourier.price = traeloYaTarification.deliveryOffers.pricing.total;
+  }
+  else if (!uderTarification.error && traeloYaTarification.error) {
+    bestCourier.courier = "Uder";
+    bestCourier.price = uderTarification.fee;
+  }
+  else if (!uderTarification.error && !traeloYaTarification.error) {
+    bestCourier.courier = uderTarification.fee < traeloYaTarification.deliveryOffers.pricing.total ? "Uder" : "TraeloYa";
+    bestCourier.price = uderTarification.fee < traeloYaTarification.deliveryOffers.pricing.total ? uderTarification.fee : traeloYaTarification.deliveryOffers.pricing.total;
+  }
+
+  return bestCourier;
+}
+
 const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], dropOffInfo: CustomerData) => {
 
   const pickUpInfo = {
@@ -163,10 +187,11 @@ const couriersTarification = async (enhancedCartProducts: enhanceCartProduct[], 
     commune: "Vitacura"
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const uderTarification = await requestUderTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
   const traeloYaTarification = await requestTraeloYaTarification(enhancedCartProducts, pickUpInfo, dropOffInfo);
   printTarificationsInConsole(uderTarification, traeloYaTarification);
+
+  return { uderTarification, traeloYaTarification };
 
 }
 
@@ -194,6 +219,7 @@ const requestUderTarification = async (enhancedCartProducts: enhanceCartProduct[
         'X-Api-key': 'NDM6HWuxtyQ9saYqnZgbJBVrS8A7KpeXRjGv2m5c'
       },
       body: JSON.stringify(inputBody),
+      agent
     });
 
     const uderTarification = await response.json();
@@ -246,6 +272,7 @@ const requestTraeloYaTarification = async (enhancedCartProducts: enhanceCartProd
         'X-Api-key': 'MbUP6JzTNB3kC5rjwFS2neuahLE7yKvZs8HXtmqf'
       },
       body: JSON.stringify(inputBody),
+      agent
     });
 
     const traeloYaTarification = await response.json();
