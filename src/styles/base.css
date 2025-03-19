@@ -8,7 +8,7 @@ html, body {
 
 body {
   min-height: 100vh;
-  min-height: 100svh; /* not all browsers support svh units */
+  min-height: 100svh; /* no borrar: no todos los browsers soportan svh */
   max-width: 100%;
   margin: 0;
   padding: 0;
@@ -16,6 +16,5 @@ body {
   background-color: var(--color-blue-flapp);
   color: var(--color-white);
   font-family: var(--font-geist-sans);
-  font-size: 40px;
-  /* font-weight: 400; */
+  font-size: 80px;
 }

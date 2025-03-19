@@ -3,6 +3,9 @@
 import styles from "@/styles/pages/home.module.css";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import emptyCartSvg from "../../public/empty-cart.svg";
+import fullCartSvg from "../../public/full-cart.svg";
 
 export default function Home() {
 
@@ -45,15 +48,25 @@ export default function Home() {
   return (
     <div className={styles.page}>
 
-      Testeando
+      <div className={styles.title}>Bienvenido a Flipp</div>
+      <div className={styles.subtitle}>donde han comprado más personas que las que caben en un movistar arena</div>
 
-      <button className={styles.button} onClick={handleGenerateCart}> 
-        Generar carrito
-      </button>
-      
-      <button className={styles.button} onClick={handleFinishPurchase}>
-        Finalizar compra 
-      </button>
+      <div className={styles.buttonsContainer}>
+        <button className={styles.button} onClick={handleGenerateCart}> 
+          Generar carrito
+        </button>
+ 
+        <button className={styles.button} onClick={handleFinishPurchase}>
+          Finalizar compra 
+        </button>
+      </div>
+
+      <div className={styles.cartIcon}>
+        {isCartEmpty() ?
+          <Image src={emptyCartSvg} alt="empty-cart" /> 
+          : <Image src={fullCartSvg} alt="full-cart" />
+          }
+      </div>
       
     </div>
   );
