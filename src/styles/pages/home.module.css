@@ -38,6 +38,7 @@
 
 .button:hover {
   background-color: var(--color-mint);
+  color: var(--color-blue-flapp);
 }
 
 .cartIcon {

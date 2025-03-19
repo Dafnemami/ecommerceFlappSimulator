@@ -73,24 +73,29 @@ export default function Checkout() {
   return (
     <div className={styles.page}>
       <div className={styles.title}>Checkout</div>
+  
+      <div className={styles.horizontalContainer}>
+        <div>
+          <button className={styles.button} onClick={() => router.push('/')}>
+            Volver
+          </button>
 
-      <CartSummary products={cartData} />
+          <button className={styles.button} onClick={handleClearCart} >
+            Limpiar carrito
+          </button>
+          <CartSummary products={cartData} />
+        </div>
+        <button className={styles.button} onClick={() => router.push('/customer-data')}>
+          Ingresa tus datos
+        </button>
+      </div>
 
-      <button className={styles.button} onClick={() => router.push('/customer-data')}>
-        Ingresa tus datos
-      </button>
+      <div className={styles.buttonsContainer}>
+        <button className={[styles.courierTarifButton].join("")} onClick={handleCalculateShipping}> 
+          Cotizar despacho
+        </button>    
+      </div>
 
-      <button className={styles.button} onClick={handleCalculateShipping}> 
-        Cotizar despacho
-      </button>
-      
-      <button className={styles.button} onClick={handleClearCart} >
-        Limpiar carrito
-      </button>
-
-      <button className={styles.button} onClick={() => router.push('/')}>
-        Volver
-      </button>
     </div>
   );
 }
