@@ -33,3 +33,4 @@ npm run dev
 
 - Front: Botones volver y limpiar carrito como íconos. Formulario de botón ingresa tus datos que este en reemplazo del botón en vista checkout, eliminando vista CustomerData. Homogenizar un poco más el diseño (tamaño fuentes). 
 - Back: base de dato para almacenar datos de envío del usuario siempre que también se incorpore manejo de sesiones.
+- Llamados a la api de couriers modelarlos como servicios, esto es, funciones que se guardan en un módulo aparte.
