@@ -4,11 +4,11 @@
   --color-white: #fff;
   --color-blue-flapp: #0056b8; 
   --color-gray: #70706e;
-  --color-dark-purple:hsl(274, 91.90%, 29.00%);
   --color-mint: #e0ffe3;
-
-  /* Color variants */
-  --color-blue-flapp-alpha-50: rgba(0, 86, 184, 0.5);
+  --color-soft-yellow:rgb(232, 219, 97);
+  
+  /* Color Variants */
+  --color-soft-blue:hsla(240, 81.30%, 14.70%, 0.16);
 
   /* Borders */
   --border-main-buttons: 1px solid var(--color-blue-flapp);

@@ -1,0 +1,14 @@
+
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  padding: 0 100px;
+}
+
+.title {
+  margin-bottom: 0px;
+  font-weight: 700;
+}

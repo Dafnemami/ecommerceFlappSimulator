@@ -11,18 +11,8 @@ type Product = {
 
 
 const CartSummary: any = ({ products }) => {
-  if (products.length === 0) {
-    return <p className={styles.emptyCart}>Tu carrito está vacío 🛒</p>;
-  }
-
-  const calculateTotalPerProduct = (product: Product) => {
-    return product.price * product.quantity;
-  };
-
-  const calculateTotalPerProductWithDiscounts = (product: Product) => {
-    const discount = product.discount || 0; 
-    return (product.price - discount) * product.quantity;
-  };
+  const calculateTotalPerProduct = (product: Product) => product.price * product.quantity;
+  const calculateTotalPerProductWithDiscounts = (product: Product) => (product.price - (product.discount || 0)) * product.quantity;
 
   const subtotal = products.reduce((sum: number, product: Product) => sum + calculateTotalPerProduct(product), 0);
   const total = products.reduce((sum: number, product: Product) => sum + calculateTotalPerProductWithDiscounts(product), 0);
@@ -30,21 +20,30 @@ const CartSummary: any = ({ products }) => {
   return (
     <div className={styles.cartContainer}>
       <h2 className={styles.title}>Resumen del Carrito 🛍️</h2>
-      <ul className={styles.productList}>
+      
+      <div className={styles.productList}>
+        <div className={styles.productHeader}>
+          <span>Producto</span>
+          <span>Precio</span>
+          <span>Cantidad</span>
+          <span>Descuento</span>
+          <span>Total</span>
+        </div>
+
         {products.map((product: Product) => (
-          <li key={product.productId} className={styles.productItem}>
+          <div key={product.productId} className={styles.productItem}>
             <span className={styles.productName}>Producto {product.productId}</span>
-            <span className={styles.price}>${product.price} c/u</span>
-            <span className={styles.quantity}>x{product.quantity}</span>
-            {product.discount != 0 ? (
-              <span className={styles.discount}>Descuento: ${product.discount}</span>
-            ) : (
-              <span className={styles.noDiscount}>Sin descuento</span>
-            )}
-            <span className={styles.total}>Total: ${calculateTotalPerProductWithDiscounts(product).toFixed(2)}</span>
-          </li>
+            <span className={styles.price}>${product.price}</span>
+            <span className={styles.quantity}>{product.quantity}</span>
+            <span className={styles.discount}>
+              {product.discount ? `$${product.discount}` : "-"}
+            </span>
+            <span className={styles.total}>
+              ${calculateTotalPerProductWithDiscounts(product).toFixed(2)}
+            </span>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <div className={styles.summary}>
         <p className={styles.subtotal}>Subtotal: ${subtotal.toFixed(2)}</p>
@@ -55,3 +54,4 @@ const CartSummary: any = ({ products }) => {
 };
 
 export default CartSummary;
+

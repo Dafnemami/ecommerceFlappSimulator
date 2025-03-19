@@ -72,7 +72,7 @@ export default function Checkout() {
 
   return (
     <div className={styles.page}>
-      <h1>Checkout</h1>
+      <div className={styles.title}>Checkout</div>
 
       <CartSummary products={cartData} />
 
