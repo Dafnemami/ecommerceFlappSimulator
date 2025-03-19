@@ -1,41 +1,35 @@
+## Ejecución 
 
-- ts-node ./archive.tsx
+Crear un .env.local con las siguientes variables de entorno:
 
-
-PENDIENTES
-- ocupar .env
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+UDER_CREDENTIAL=
+TRAELOYA_CREDENTIAL=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+En la terminal:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Consideraciones
 
-## Learn More
+- Stack: NextJS + Typescript + CSSModules + eslint.
+- Para almacenamiento solo se utiliza localStorage (sobre sessionStorage por persistencia), en front, como emulador de una bbdd pues son pocos datos. De todas formas, cuando se requiera almacenar en back, se emula el envío de los datos a este servidor, pero no se realiza ninguna acción con ellos (ej: api/customer-data).
+- Datos en localStorage: (cartProducts), datos de envío (userData), resultados de la cotización (shippingResponse).
+- Se ocupan de forma parcial o completa reglas de clean code como: funciones con una responsabilidad, nombres de variables descriptivos, casi nulidad de comentarios en código.
+- El codigo posee un archivo httpsAgent.js y llama a fetch from 'node-fetch'. Esfuerzo que proviene de la motivación por desactivar la verificación de certificados SSL al realizar fetch sobre las apis de traeloya y uder. Si el certificado fue reparado, se puede eliminar este archivo y la dependencia de node-fetch.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supuestos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Se usa cssModules sobre tailwindcss pues se asume la app será altamente frecuentada por usuarios que acceden desde un dispositivo móvil. Tailwind me parece menos ordenado cuando las vistas requieren ese nivel de responsividad, lo que podría ser un problema cuando la app se complejice.
+- Se asume que el usuario no puede modificar la cantidad de productos en el carrito, solo puede eliminarlo completo una vez creado.
+- Se pueden crear tantos carritos como se desee, pero solo se puede tener uno activo a la vez y estos no se concatenan.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## No implementado y mejoras 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Front: Botones volver y limpiar carrito como íconos. Formulario de botón ingresa tus datos que este en reemplazo del botón en vista checkout, eliminando vista CustomerData. Homogenizar un poco más el diseño (tamaño fuentes). 
+- Back: base de dato para almacenar datos de envío del usuario siempre que también se incorpore manejo de sesiones.
