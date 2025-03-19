@@ -104,8 +104,8 @@ export default function CustomerData() {
 
   return (
     <div className={styles.page}>
-      <h1>CustomerData</h1>
-      <form onSubmit={handleSubmit}>
+      <div className={styles.title}>Ingresa los datos de envío</div>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
         <label>Nombre Completo</label>
         <input type="text" name="name" onChange={handleChange} />
         <label>Dirección</label>

@@ -1,0 +1,73 @@
+.page {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.formContainer { /* Agregamos una clase local */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 16px;
+
+}
+
+.formContainer label {
+  font-weight: bold;
+}
+
+.formContainer input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.formContainer input:focus {
+  border-color: #007bff;
+  transform: scale(1.02);
+  outline: none;
+}
+
+.formContainer input[type="submit"] {
+  cursor: pointer;
+  background-color: var(--color-dark-gray);
+  border: var(--border-main-buttons);
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.formContainer input[type="submit"]:hover {
+  background-color: var(--color-mint);
+  color: var(--color-blue-flapp);
+}
+
+.button {
+  display: block;
+  margin: 10px auto;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: var(--border-main-buttons);
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  background-color: var(--color-gray);
+  transition: background-color var(--duration-button-transition);
+  width: 200px;
+}
+
+.button:hover {
+  background-color: var(--color-mint);
+  color: var(--color-blue-flapp);
+}

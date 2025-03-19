@@ -27,6 +27,7 @@
   border-radius: 4px;
   transition: background-color var(--duration-button-transition);
   width: 200px;
+  cursor: pointer;
 }
 
 .button:hover {
@@ -45,11 +46,13 @@
   color: inherit;
   border: var(--border-main-buttons);
   font-size: 20px;
-  font-weight: 400;
+  font-weight: bold;
   padding: 16px 32px;
-  border-radius: 100px;
+  border-radius: 4px;
   transition: background-color var(--duration-button-transition);
   width: 300px;
+  cursor: pointer;
+
 }
 
 .courierTarifButton:hover {

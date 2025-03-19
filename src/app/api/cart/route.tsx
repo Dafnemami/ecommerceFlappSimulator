@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No hay couriers disponibles que puedan entregar la orden' }, { status: 400 });
     }
 
-    return NextResponse.json({bestCourier});
+    return NextResponse.json(bestCourier);
   } catch (error) {
     return NextResponse.json({ message: `Error al recibir la orden ${error}` }, { status: 500 });
   }

@@ -60,7 +60,7 @@ export default function Checkout() {
   }
 
   const handleShippingResponse = (shippingResponse: ShippingResponse) => {
-    localStorage.setItem('shipping', JSON.stringify(shippingResponse));
+    localStorage.setItem('shippingResponse', JSON.stringify(shippingResponse));
     router.push('/shipping-results');
   }
 
